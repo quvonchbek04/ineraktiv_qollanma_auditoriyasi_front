@@ -82,4 +82,13 @@ export const suggestionsApi = {
   update: (id, data) => apiRequest(`/suggestions/${id}`, { method: 'PUT', body: JSON.stringify(data) })
 };
 
+// ===== AI KITOB O'QUVCHI =====
+export const aiApi = {
+  ask: (contentId, question, history = []) =>
+    apiRequest('/ai/ask', {
+      method: 'POST',
+      body: JSON.stringify({ contentId, question, history })
+    })
+};
+
 export { API_URL, getToken };

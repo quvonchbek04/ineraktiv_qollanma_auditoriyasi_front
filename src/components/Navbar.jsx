@@ -25,11 +25,12 @@ export default function Navbar() {
         </Link>
 
         <div className="navbar-links">
-          <Link to="/library" style={isActive('/library')}>Kutubxona</Link>
-          <Link to="/blog" style={isActive('/blog')}>Blog</Link>
-
           {isAuthenticated && (
-            <Link to="/suggestions" style={isActive('/suggestions')}>Taklif</Link>
+            <>
+              <Link to="/library" style={isActive('/library')}>Kutubxona</Link>
+              <Link to="/blog" style={isActive('/blog')}>Blog</Link>
+              <Link to="/suggestions" style={isActive('/suggestions')}>Taklif</Link>
+            </>
           )}
           {isAdmin && (
             <Link to="/admin" className="navbar-admin-link">⚙ Admin</Link>

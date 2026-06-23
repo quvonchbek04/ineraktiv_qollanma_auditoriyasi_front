@@ -5,6 +5,7 @@
 // - Tur bo'yicha filtrlash (barchasi / kitob / video / audio)
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { contentApi, API_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,6 +20,7 @@ function getYoutubeId(url) {
 
 export default function Library() {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -236,6 +238,16 @@ export default function Library() {
                   >
                     ⬇ Yuklab olish
                   </a>
+                  {/* PDF kitoblar uchun AI o'quvchi tugmasi */}
+                  {item.type === 'book' && (
+                    <button
+                      className="btn-primary"
+                      style={{ marginLeft: '0.5rem' }}
+                      onClick={() => navigate(`/book-reader/${item.id}`)}
+                    >
+                      🤖 AI bilan o'qi
+                    </button>
+                  )}
                 </div>
               )}
             </div>
