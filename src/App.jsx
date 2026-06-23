@@ -20,7 +20,7 @@ import BookReader from './pages/BookReader';
 function SmartHome() {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;
-  return isAuthenticated ? <Navigate to="/library" replace /> : <Navigate to="/login" replace />;
+  return isAuthenticated ? <Navigate to="/library" replace /> : <Navigate to="/register" replace />;
 }
 
 export default function App() {
