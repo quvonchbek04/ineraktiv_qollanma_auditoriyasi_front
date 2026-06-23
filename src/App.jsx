@@ -7,6 +7,7 @@ import { useAuth } from './context/AuthContext';
 import { settingsApi, API_URL } from './api/client';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Library from './pages/Library';
@@ -19,7 +20,8 @@ import Diary from './pages/Diary';
 function SmartHome() {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;
-  return isAuthenticated ? <Navigate to="/library" replace /> : <Navigate to="/login" replace />;
+  // Ochiq sayt — hamma /library ga kirishi mumkin
+  return <Navigate to="/library" replace />;
 }
 
 export default function App() {
@@ -44,16 +46,17 @@ export default function App() {
         <Routes>
           <Route path="/" element={<SmartHome />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/enter" element={<Navigate to="/login" replace />} />
-          <Route path="/register" element={<Navigate to="/login" replace />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/enter" element={<Navigate to="/register" replace />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
-          <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
+          {/* Ochiq sahifalar — login talab qilinmaydi */}
+          <Route path="/library" element={<Library />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/diary" element={<ProtectedRoute><Diary /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/suggestions" element={<ProtectedRoute><Suggestions /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
-          <Route path="/book-reader/:id" element={<ProtectedRoute><BookReader /></ProtectedRoute>} />
+          <Route path="/book-reader/:id" element={<BookReader />} />
         </Routes>
       </main>
     </>
