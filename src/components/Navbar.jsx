@@ -1,4 +1,4 @@
-// components/Navbar.jsx — Navigatsiya paneli
+// components/Navbar.jsx
 
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,27 +8,20 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  function handleLogout() {
-    logout();
-    navigate('/');
-  }
-
-  function isActive(path) {
-    return location.pathname === path ? { fontWeight: 700, color: '#111' } : {};
-  }
+  function handleLogout() { logout(); navigate('/enter'); }
+  function isActive(p) { return location.pathname === p ? { fontWeight: 700, color: '#111' } : {}; }
 
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-        <Link to="/" className="navbar-logo">
-          O'quv <span>Platforma</span>
-        </Link>
+        <Link to="/" className="navbar-logo">O'quv <span>Platforma</span></Link>
 
         <div className="navbar-links">
           {isAuthenticated && (
             <>
               <Link to="/library" style={isActive('/library')}>Kutubxona</Link>
               <Link to="/blog" style={isActive('/blog')}>Blog</Link>
+              <Link to="/diary" style={isActive('/diary')}>Kundalik</Link>
               <Link to="/suggestions" style={isActive('/suggestions')}>Taklif</Link>
             </>
           )}
@@ -41,15 +34,10 @@ export default function Navbar() {
               <Link to="/profile" style={isActive('/profile')}>
                 {user.full_name.split(' ')[0]}
               </Link>
-              <button onClick={handleLogout} className="navbar-logout-btn">
-                Chiqish
-              </button>
+              <button onClick={handleLogout} className="navbar-logout-btn">Chiqish</button>
             </div>
           ) : (
-            <>
-              <Link to="/login" style={isActive('/login')}>Kirish</Link>
-              <Link to="/register" className="navbar-cta">Ro'yxatdan o'tish</Link>
-            </>
+            <Link to="/enter" className="navbar-cta">Kirish</Link>
           )}
         </div>
       </div>

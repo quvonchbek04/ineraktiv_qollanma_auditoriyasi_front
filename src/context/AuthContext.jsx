@@ -1,5 +1,4 @@
-// context/AuthContext.jsx — Foydalanuvchi login holatini butun ilova bo'ylab saqlash
-// useAuth() hook orqali har qanday komponentda foydalanuvchi ma'lumotiga kirish mumkin
+// context/AuthContext.jsx — Foydalanuvchi login holatini saqlash
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authApi, usersApi } from '../api/client';
@@ -10,31 +9,19 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Sahifa yangilanganda, agar token bo'lsa, foydalanuvchi ma'lumotini qayta yuklaymiz
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!token) { setLoading(false); return; }
 
     usersApi.getMe()
       .then((data) => setUser(data.user))
-      .catch(() => {
-        localStorage.removeItem('token'); // Token yaroqsiz bo'lsa, tozalaymiz
-      })
+      .catch(() => localStorage.removeItem('token'))
       .finally(() => setLoading(false));
   }, []);
 
-  async function login(email, password) {
-    const data = await authApi.login(email, password);
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
-    return data.user;
-  }
-
-  async function register(full_name, email, password) {
-    const data = await authApi.register(full_name, email, password);
+  // Faqat ism bilan kirish
+  async function enter(full_name) {
+    const data = await authApi.enter(full_name);
     localStorage.setItem('token', data.token);
     setUser(data.user);
     return data.user;
@@ -45,7 +32,6 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
-  // Profil yangilanganda (masalan bio o'zgartirilganda) user holatini ham yangilash uchun
   function updateUserState(newUserData) {
     setUser((prev) => ({ ...prev, ...newUserData }));
   }
@@ -55,8 +41,7 @@ export function AuthProvider({ children }) {
     loading,
     isAuthenticated: !!user,
     isAdmin: !!user?.is_admin,
-    login,
-    register,
+    enter,
     logout,
     updateUserState
   };
@@ -66,8 +51,6 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth faqat AuthProvider ichida ishlatilishi kerak.');
-  }
+  if (!context) throw new Error('useAuth faqat AuthProvider ichida ishlatilishi kerak.');
   return context;
 }

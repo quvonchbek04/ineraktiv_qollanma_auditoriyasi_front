@@ -1,19 +1,9 @@
-// components/ProtectedRoute.jsx — Faqat login qilgan foydalanuvchilar kira oladigan sahifalar uchun
-// Agar login qilinmagan bo'lsa, /login sahifasiga yo'naltiradi
-
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return <div className="page-loading">Yuklanmoqda...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
+  if (loading) return null;
+  if (!isAuthenticated) return <Navigate to="/enter" replace />;
   return children;
 }

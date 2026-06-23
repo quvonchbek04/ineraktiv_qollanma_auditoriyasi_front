@@ -1,50 +1,35 @@
 // api/client.js — Backend bilan bog'lanish uchun markaziy funksiya
-// Barcha so'rovlar shu fayl orqali yuboriladi (token avtomatik qo'shiladi)
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-// Token'ni localStorage'dan olish (login qilingandan keyin saqlanadi)
 function getToken() {
   return localStorage.getItem('token');
 }
 
-// Asosiy so'rov funksiyasi
 async function apiRequest(endpoint, options = {}) {
   const token = getToken();
+  const headers = { ...(options.headers || {}) };
 
-  const headers = {
-    ...(options.headers || {})
-  };
-
-  // FormData (fayl yuklash) bo'lmasa, JSON sifatida yuboramiz
   if (!(options.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json';
   }
-
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers
-  });
-
+  const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
     throw new Error(data.error || 'Server xatosi yuz berdi.');
   }
-
   return data;
 }
 
-// ===== AUTH =====
+// ===== AUTH — faqat ism bilan kirish =====
 export const authApi = {
-  register: (full_name, email, password) =>
-    apiRequest('/auth/register', { method: 'POST', body: JSON.stringify({ full_name, email, password }) }),
-  login: (email, password) =>
-    apiRequest('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) })
+  enter: (full_name) =>
+    apiRequest('/auth/enter', { method: 'POST', body: JSON.stringify({ full_name }) })
 };
 
 // ===== USERS =====
@@ -54,7 +39,7 @@ export const usersApi = {
   getUser: (id) => apiRequest(`/users/${id}`)
 };
 
-// ===== CONTENT (kitob/video/audio + YouTube) =====
+// ===== CONTENT =====
 export const contentApi = {
   getAll: (type) => apiRequest(`/content${type ? `?type=${type}` : ''}`),
   getMine: () => apiRequest('/content/mine'),
@@ -74,7 +59,7 @@ export const blogApi = {
   remove: (id) => apiRequest(`/blog/${id}`, { method: 'DELETE' })
 };
 
-// ===== SUGGESTIONS (taklif/chat) =====
+// ===== SUGGESTIONS =====
 export const suggestionsApi = {
   create: (message) => apiRequest('/suggestions', { method: 'POST', body: JSON.stringify({ message }) }),
   getMine: () => apiRequest('/suggestions/mine'),
@@ -85,10 +70,24 @@ export const suggestionsApi = {
 // ===== AI KITOB O'QUVCHI =====
 export const aiApi = {
   ask: (contentId, question, history = []) =>
-    apiRequest('/ai/ask', {
-      method: 'POST',
-      body: JSON.stringify({ contentId, question, history })
-    })
+    apiRequest('/ai/ask', { method: 'POST', body: JSON.stringify({ contentId, question, history }) })
+};
+
+// ===== SETTINGS (fon rasm) =====
+export const settingsApi = {
+  getBackground: () => apiRequest('/settings/background'),
+  setBackground: (url) =>
+    apiRequest('/settings/background', { method: 'POST', body: JSON.stringify({ url }) }),
+  uploadBackground: (formData) =>
+    apiRequest('/settings/background-upload', { method: 'POST', body: formData })
+};
+
+// ===== DIARY (kundalik) =====
+export const diaryApi = {
+  getAll: () => apiRequest('/diary'),
+  create: (title, body) => apiRequest('/diary', { method: 'POST', body: JSON.stringify({ title, body }) }),
+  update: (id, data) => apiRequest(`/diary/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  remove: (id) => apiRequest(`/diary/${id}`, { method: 'DELETE' })
 };
 
 export { API_URL, getToken };

@@ -873,3 +873,16 @@ textarea { resize: vertical; }
   .reader-header { flex-direction: column; }
   .reader-message-bubble { max-width: 90%; font-size: 0.87rem; }
 }
+
+/* Enter sahifasi uchun qo'shimcha stillar */
+.auth-hint {
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: #888;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.btn-full {
+  width: 100%;
+}
