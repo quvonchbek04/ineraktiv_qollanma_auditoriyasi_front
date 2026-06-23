@@ -19,9 +19,25 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  // Faqat ism bilan kirish
-  async function enter(full_name) {
-    const data = await authApi.enter(full_name);
+  // Ro'yxatdan o'tish
+  async function register(full_name, password) {
+    const data = await authApi.register(full_name, password);
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    return data.user;
+  }
+
+  // Login
+  async function login(full_name, password) {
+    const data = await authApi.login(full_name, password);
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    return data.user;
+  }
+
+  // Admin login (email + parol)
+  async function adminLogin(email, password) {
+    const data = await authApi.adminLogin(email, password);
     localStorage.setItem('token', data.token);
     setUser(data.user);
     return data.user;
@@ -41,7 +57,9 @@ export function AuthProvider({ children }) {
     loading,
     isAuthenticated: !!user,
     isAdmin: !!user?.is_admin,
-    enter,
+    register,
+    login,
+    adminLogin,
     logout,
     updateUserState
   };

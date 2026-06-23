@@ -26,10 +26,14 @@ async function apiRequest(endpoint, options = {}) {
   return data;
 }
 
-// ===== AUTH — faqat ism bilan kirish =====
+// ===== AUTH =====
 export const authApi = {
-  enter: (full_name) =>
-    apiRequest('/auth/enter', { method: 'POST', body: JSON.stringify({ full_name }) })
+  register: (full_name, password) =>
+    apiRequest('/auth/register', { method: 'POST', body: JSON.stringify({ full_name, password }) }),
+  login: (full_name, password) =>
+    apiRequest('/auth/login', { method: 'POST', body: JSON.stringify({ full_name, password }) }),
+  adminLogin: (email, password) =>
+    apiRequest('/auth/admin-login', { method: 'POST', body: JSON.stringify({ email, password }) }),
 };
 
 // ===== USERS =====

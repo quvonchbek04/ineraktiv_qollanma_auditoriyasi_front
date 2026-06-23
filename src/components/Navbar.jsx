@@ -37,7 +37,10 @@ export default function Navbar() {
               <button onClick={handleLogout} className="navbar-logout-btn">Chiqish</button>
             </div>
           ) : (
-            <Link to="/enter" className="navbar-cta">Kirish</Link>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Link to="/login" className="navbar-cta" style={{ background: 'transparent', color: 'var(--gray-700)', border: '1.5px solid var(--gray-200)' }}>Kirish</Link>
+              <Link to="/register" className="navbar-cta">Ro'yxat</Link>
+            </div>
           )}
         </div>
       </div>

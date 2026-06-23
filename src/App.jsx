@@ -10,6 +10,8 @@ import { settingsApi, API_URL } from './api/client';
 
 import Home from './pages/Home';
 import Enter from './pages/Enter';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Library from './pages/Library';
 import Blog from './pages/Blog';
@@ -21,7 +23,7 @@ import Diary from './pages/Diary';
 function SmartHome() {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;
-  return isAuthenticated ? <Navigate to="/library" replace /> : <Navigate to="/enter" replace />;
+  return isAuthenticated ? <Navigate to="/library" replace /> : <Navigate to="/login" replace />;
 }
 
 export default function App() {
@@ -46,7 +48,9 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<SmartHome />} />
-          <Route path="/enter" element={<Enter />} />
+          <Route path="/enter" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
 
           <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
