@@ -1,5 +1,3 @@
-// App.jsx — Asosiy ilova
-
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
@@ -8,10 +6,8 @@ import AdminRoute from './components/AdminRoute';
 import { useAuth } from './context/AuthContext';
 import { settingsApi, API_URL } from './api/client';
 
-import Home from './pages/Home';
-import Enter from './pages/Enter';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Library from './pages/Library';
 import Blog from './pages/Blog';
@@ -27,7 +23,6 @@ function SmartHome() {
 }
 
 export default function App() {
-  // Fon rasmini global yuklash
   useEffect(() => {
     settingsApi.getBackground().then(({ url }) => {
       if (url) {
@@ -48,11 +43,10 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<SmartHome />} />
-          <Route path="/enter" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/enter" element={<Navigate to="/login" replace />} />
+          <Route path="/register" element={<Navigate to="/login" replace />} />
           <Route path="/home" element={<Home />} />
-
           <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
           <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
           <Route path="/diary" element={<ProtectedRoute><Diary /></ProtectedRoute>} />

@@ -1,7 +1,7 @@
 // pages/AdminPanel.jsx — Admin boshqaruv paneli
 
 import { useState, useEffect } from 'react';
-import { suggestionsApi, contentApi, settingsApi, API_URL } from '../api/client';
+import { suggestionsApi, contentApi, settingsApi, authApi, API_URL } from '../api/client';
 
 const STATUS_LABEL = {
   kutilmoqda:     { text: 'Kutilmoqda',      cls: 'status-pending' },
@@ -15,7 +15,15 @@ function formatDate(d) {
 }
 
 export default function AdminPanel() {
-  const [tab, setTab] = useState('suggestions'); // suggestions | upload | youtube | background
+  const [tab, setTab] = useState('users'); // users | suggestions | upload | youtube | background
+
+  // ===== FOYDALANUVCHILAR =====
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [newUser, setNewUser] = useState({ full_name: '', password: '' });
+  const [addingUser, setAddingUser] = useState(false);
+  const [userError, setUserError] = useState('');
+  const [userSuccess, setUserSuccess] = useState('');
 
   // ===== TAKLIFLAR =====
   const [suggestions, setSuggestions] = useState([]);
@@ -51,8 +59,40 @@ export default function AdminPanel() {
 
   useEffect(() => {
     loadSuggestions();
+    loadUsers();
     settingsApi.getBackground().then(({ url }) => setCurrentBg(url || '')).catch(() => {});
   }, [statusFilter]);
+
+  async function loadUsers() {
+    setUsersLoading(true);
+    try {
+      const data = await authApi.getUsersList();
+      setUsers(data.users || []);
+    } catch { setUsers([]); }
+    finally { setUsersLoading(false); }
+  }
+
+  async function handleAddUser(e) {
+    e.preventDefault();
+    if (!newUser.full_name.trim()) { setUserError('Ism kiritilishi shart.'); return; }
+    if (newUser.password.length < 6) { setUserError('Parol kamida 6 ta belgi.'); return; }
+    setAddingUser(true); setUserError(''); setUserSuccess('');
+    try {
+      await authApi.addUser(newUser.full_name.trim(), newUser.password);
+      setUserSuccess(`"${newUser.full_name.trim()}" muvaffaqiyatli qo'shildi!`);
+      setNewUser({ full_name: '', password: '' });
+      loadUsers();
+    } catch (err) { setUserError(err.message || 'Xatolik.'); }
+    finally { setAddingUser(false); }
+  }
+
+  async function handleDeleteUser(id, name) {
+    if (!window.confirm(`"${name}" ni o'chirishni tasdiqlaysizmi?`)) return;
+    try {
+      await authApi.deleteUser(id);
+      loadUsers();
+    } catch (err) { alert(err.message || 'O\'chirishda xatolik.'); }
+  }
 
   async function loadSuggestions() {
     setSugLoading(true); setSugError('');
@@ -174,6 +214,7 @@ export default function AdminPanel() {
       {/* Tab tugmalari */}
       <div className="filter-tabs" style={{ marginBottom: 28 }}>
         {[
+          { key: 'users', label: '👥 Foydalanuvchilar' },
           { key: 'suggestions', label: '💬 Takliflar' },
           { key: 'upload', label: '📁 Kontent yuklash' },
           { key: 'youtube', label: '▶ YouTube' },
@@ -184,6 +225,82 @@ export default function AdminPanel() {
           </button>
         ))}
       </div>
+
+      {/* ===== FOYDALANUVCHILAR ===== */}
+      {tab === 'users' && (
+        <div>
+          {/* Yangi foydalanuvchi qo'shish */}
+          <div className="upload-box" style={{ marginBottom: 32 }}>
+            <h3>Yangi foydalanuvchi qo'shish</h3>
+            {userError && <div className="auth-error" style={{ marginTop: 12 }}>{userError}</div>}
+            {userSuccess && <div className="success-banner" style={{ marginTop: 12 }}>{userSuccess}</div>}
+            <form onSubmit={handleAddUser} className="upload-form" style={{ marginTop: 16 }}>
+              <div className="form-group">
+                <label>Ism</label>
+                <input
+                  placeholder="Foydalanuvchi ismi"
+                  value={newUser.full_name}
+                  onChange={(e) => { setNewUser((p) => ({ ...p, full_name: e.target.value })); setUserError(''); setUserSuccess(''); }}
+                  disabled={addingUser}
+                />
+              </div>
+              <div className="form-group">
+                <label>Parol</label>
+                <input
+                  type="password"
+                  placeholder="Kamida 6 ta belgi"
+                  value={newUser.password}
+                  onChange={(e) => { setNewUser((p) => ({ ...p, password: e.target.value })); setUserError(''); setUserSuccess(''); }}
+                  disabled={addingUser}
+                />
+              </div>
+              <button type="submit" className="btn-primary" disabled={addingUser}>
+                {addingUser ? 'Qo\'shilmoqda...' : '+ Qo\'shish'}
+              </button>
+            </form>
+          </div>
+
+          {/* Foydalanuvchilar ro'yxati */}
+          <h3 style={{ marginBottom: 16, fontWeight: 700 }}>Barcha foydalanuvchilar</h3>
+          {usersLoading && <p className="page-loading">Yuklanmoqda...</p>}
+          {!usersLoading && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {users.map((u) => (
+                <div key={u.id} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '12px 16px', background: 'var(--white)', borderRadius: 'var(--radius-md)',
+                  boxShadow: 'var(--shadow-sm)', border: '1px solid var(--gray-200)'
+                }}>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>{u.full_name}</span>
+                    {u.is_admin === 1 && (
+                      <span style={{
+                        marginLeft: 10, fontSize: '0.75rem', background: 'var(--blue-100)',
+                        color: 'var(--blue-600)', padding: '2px 8px', borderRadius: 'var(--radius-full)', fontWeight: 600
+                      }}>Admin</span>
+                    )}
+                    <div style={{ fontSize: '0.8rem', color: 'var(--gray-400)', marginTop: 2 }}>
+                      {formatDate(u.created_at)}
+                    </div>
+                  </div>
+                  {u.is_admin !== 1 && (
+                    <button
+                      onClick={() => handleDeleteUser(u.id, u.full_name)}
+                      style={{
+                        background: 'var(--red-50)', color: 'var(--red-600)', border: '1px solid var(--red-100)',
+                        borderRadius: 'var(--radius-sm)', padding: '6px 14px', fontWeight: 600,
+                        cursor: 'pointer', fontSize: '0.85rem'
+                      }}
+                    >
+                      O'chirish
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ===== TAKLIFLAR ===== */}
       {tab === 'suggestions' && (

@@ -1,5 +1,3 @@
-// components/Navbar.jsx
-
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,7 +6,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  function handleLogout() { logout(); navigate('/enter'); }
+  function handleLogout() { logout(); navigate('/login'); }
   function isActive(p) { return location.pathname === p ? { fontWeight: 700, color: '#111' } : {}; }
 
   return (
@@ -28,7 +26,6 @@ export default function Navbar() {
           {isAdmin && (
             <Link to="/admin" className="navbar-admin-link">⚙ Admin</Link>
           )}
-
           {isAuthenticated ? (
             <div className="navbar-user">
               <Link to="/profile" style={isActive('/profile')}>
@@ -37,10 +34,7 @@ export default function Navbar() {
               <button onClick={handleLogout} className="navbar-logout-btn">Chiqish</button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <Link to="/login" className="navbar-cta" style={{ background: 'transparent', color: 'var(--gray-700)', border: '1.5px solid var(--gray-200)' }}>Kirish</Link>
-              <Link to="/register" className="navbar-cta">Ro'yxat</Link>
-            </div>
+            <Link to="/login" className="navbar-cta">Kirish</Link>
           )}
         </div>
       </div>
