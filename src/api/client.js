@@ -16,8 +16,6 @@ async function apiRequest(endpoint, options = {}) {
 export const authApi = {
   login: (full_name, password) =>
     apiRequest('/auth/login', { method: 'POST', body: JSON.stringify({ full_name, password }) }),
-  register: (full_name, password) =>
-    apiRequest('/auth/register', { method: 'POST', body: JSON.stringify({ full_name, password }) }),
   addUser: (full_name, password) =>
     apiRequest('/auth/add-user', { method: 'POST', body: JSON.stringify({ full_name, password }) }),
   getUsersList: () => apiRequest('/auth/users-list'),

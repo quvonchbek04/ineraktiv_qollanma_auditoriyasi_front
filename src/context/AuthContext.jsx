@@ -23,13 +23,6 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
-  async function register(full_name, password) {
-    const data = await authApi.register(full_name, password);
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
-    return data;
-  }
-
   function logout() {
     localStorage.removeItem('token');
     setUser(null);
@@ -44,7 +37,7 @@ export function AuthProvider({ children }) {
       user, loading,
       isAuthenticated: !!user,
       isAdmin: !!user?.is_admin,
-      login, register, logout, updateUserState
+      login, logout, updateUserState
     }}>
       {children}
     </AuthContext.Provider>

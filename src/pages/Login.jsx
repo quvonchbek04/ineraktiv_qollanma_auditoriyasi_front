@@ -1,7 +1,7 @@
 // pages/Login.jsx — Kirish sahifasi (ism + parol)
 
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
@@ -73,11 +73,6 @@ export default function Login() {
             {loading ? 'Kirilmoqda...' : 'Kirish →'}
           </button>
         </form>
-
-        <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#666' }}>
-          Akkauntingiz yo'qmi?{' '}
-          <Link to="/register" style={{ color: '#4f46e5', fontWeight: 600 }}>Ro'yxatdan o'ting</Link>
-        </p>
       </div>
     </div>
   );
