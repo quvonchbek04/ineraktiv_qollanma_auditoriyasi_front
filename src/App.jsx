@@ -7,6 +7,7 @@ import { useAuth } from './context/AuthContext';
 import { settingsApi, API_URL } from './api/client';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Library from './pages/Library';
@@ -44,8 +45,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<SmartHome />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/enter" element={<Navigate to="/login" replace />} />
-          <Route path="/register" element={<Navigate to="/login" replace />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
           <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />

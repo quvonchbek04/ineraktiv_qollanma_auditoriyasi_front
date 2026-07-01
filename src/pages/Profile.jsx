@@ -32,13 +32,14 @@ export default function Profile() {
     }
   }, [user]);
 
-  // Mening kontentlarimni yuklash
+  // Mening kontentlarimni yuklash — faqat admin uchun kerak
   useEffect(() => {
+    if (!user || user.is_admin !== 1) { setContentLoading(false); return; }
     contentApi.getMine()
       .then((data) => setMyContent(data.content || []))
       .catch(() => setContentError('Kontentlarni yuklashda xatolik.'))
       .finally(() => setContentLoading(false));
-  }, []);
+  }, [user]);
 
   function handleFormChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -167,7 +168,8 @@ export default function Profile() {
         )}
       </div>
 
-      {/* ===== MENING KONTENTLARIM ===== */}
+      {/* ===== MENING KONTENTLARIM — faqat admin uchun ===== */}
+      {user.is_admin === 1 && (
       <div className="section">
         <h2 className="section-title">Mening kontentlarim</h2>
 
@@ -201,6 +203,7 @@ export default function Profile() {
           </div>
         )}
       </div>
+      )}
 
     </div>
   );
